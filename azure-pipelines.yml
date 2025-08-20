@@ -1,0 +1,44 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+# 1. Checkout Code
+- task: Checkout@2
+  displayName: 'Checkout Code'
+
+# 2. Install Dependencies (Node.js example, change if using Java/Python)
+- task: UseNode@1
+  inputs:
+    version: '18.x'
+  displayName: 'Set up Node.js'
+
+- script: |
+    npm install
+  displayName: 'Install Dependencies'
+
+# 3. Run Unit Tests
+- script: |
+    npm test
+  displayName: 'Run Unit Tests'
+
+# 4. Install k6 for Performance Testing
+- script: |
+    sudo apt update && sudo apt install k6 -y
+  displayName: 'Install k6'
+
+# 5. Run Performance Tests using k6
+- script: |
+    k6 run performance/test.js
+  displayName: 'Run Performance Tests'
+
+# 6. Publish Test Results
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/results.xml'
+    testRunTitle: 'Performance Test Results'
+  condition: succeededOrFailed()
