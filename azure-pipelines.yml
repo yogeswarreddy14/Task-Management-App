@@ -8,35 +8,36 @@ pool:
 
 steps:
 # 1. Checkout Code
-- task: Checkout@2
+- checkout: self
   displayName: 'Checkout Code'
 
-# 2. Install Dependencies (Node.js example, change if using Java/Python)
+# 2. Set up Node.js (change if using Java/Python)
 - task: UseNode@1
   inputs:
     version: '18.x'
   displayName: 'Set up Node.js'
 
+# 3. Install Dependencies
 - script: |
     npm install
   displayName: 'Install Dependencies'
 
-# 3. Run Unit Tests
+# 4. Run Unit Tests
 - script: |
     npm test
   displayName: 'Run Unit Tests'
 
-# 4. Install k6 for Performance Testing
+# 5. Install k6 (Performance Testing Tool)
 - script: |
     sudo apt update && sudo apt install k6 -y
   displayName: 'Install k6'
 
-# 5. Run Performance Tests using k6
+# 6. Run Performance Tests
 - script: |
     k6 run performance/test.js
   displayName: 'Run Performance Tests'
 
-# 6. Publish Test Results
+# 7. Publish Test Results
 - task: PublishTestResults@2
   inputs:
     testResultsFiles: '**/results.xml'
